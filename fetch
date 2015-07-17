@@ -20,7 +20,7 @@ REST_EPS=(fieldworkers visits/cached individuals/cached relationships/cached \
 COOKIE_FILE=.cookies.txt
 
 # Variables to accumulate options for login/fetch commands, respectively
-HTTP_OPTS=("-d")
+HTTP_OPTS=("-q")
 LOGIN_OPTS=("-O" "/dev/null" "--save-cookies='$COOKIE_FILE'" "--keep-session-cookies")
 FETCH_OPTS=("-x" "-nH")
 
