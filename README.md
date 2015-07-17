@@ -49,6 +49,6 @@ the proxy.
 
 # Potential Issues
 
-In order for the proxy to work, the host computer's firewall needs to accept
+In order for the proxy to work, the host computer's firewall needs to allow
 connections on the port it starts on (by default 8082).
 
