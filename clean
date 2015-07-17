@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DIR=openhds
+
+if [[ -d "$DIR" ]]; then
+  echo "removing $DIR"
+  rm -rf "$DIR"
+else
+  echo "directory $DIR no present, nothing to cleanup"
+fi

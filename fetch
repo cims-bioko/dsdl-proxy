@@ -1,0 +1,38 @@
+#!/bin/bash
+
+##
+# This script fetches the cache files from an openhds server. It was written to
+# test the difference in performance of syncing to tablets when the content is
+# served locally.
+##
+
+set -o errexit
+
+ROOT_URI=http://cims-bioko.org:8080/openhds
+LOGIN_URI=$ROOT_URI/loginProcess
+REST_BASE=$ROOT_URI/api/rest
+REST_EPS=(fieldworkers visits/cached individuals/cached relationships/cached \
+ memberships/cached socialgroups/cached locationhierarchies locations/cached)
+
+echo -n "openhds username: "
+read USER
+echo -n "openhds password: "
+stty -echo
+read PASS
+stty echo
+
+echo
+echo -n "logging in as $USER..."
+wget -q -O /dev/null --post-data "j_username=$USER&j_password=$PASS" \
+ --save-cookies .cookies.txt --keep-session-cookies "$LOGIN_URI"
+echo done
+
+echo "starting download from $ROOT_URI"
+for ep in ${REST_EPS[*]}
+do
+  epuri="$REST_BASE/$ep"
+  echo -n "fetching $ep..."
+  wget -q -x -nH --load-cookies .cookies.txt "$epuri"
+  echo done
+done
+
