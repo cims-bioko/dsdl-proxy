@@ -20,9 +20,12 @@ REST_EPS=(fieldworkers visits/cached individuals/cached relationships/cached \
 COOKIE_FILE=.cookies.txt
 
 # Variables to accumulate options for login/fetch commands, respectively
-HTTP_OPTS="-q"
-LOGIN_OPTS="$HTTP_OPTS -O /dev/null --save-cookies $COOKIE_FILE --keep-session-cookies"
-FETCH_OPTS="$HTTP_OPTS -x -nH"
+HTTP_OPTS=("-d")
+LOGIN_OPTS=("-O" "/dev/null" "--save-cookies='$COOKIE_FILE'" "--keep-session-cookies")
+FETCH_OPTS=("-x" "-nH")
+
+# Toggles whether to ask for gzip compressed content (set to any value to enable)
+COMPRESS=true
 
 # Command to use for http operations
 HTTP_CMD=wget
@@ -35,7 +38,7 @@ HTTP_CMD=wget
 function auth() {
   echo
   echo -n "logging in as $USER..."
-  $HTTP_CMD $LOGIN_OPTS "$LOGIN_URI"
+  "$HTTP_CMD" "${HTTP_OPTS[@]}" "${LOGIN_OPTS[@]}" "$LOGIN_URI"
   echo done
 }
 
@@ -56,9 +59,15 @@ function fetch() {
   endpoint=$2
   epuri="$base/$endpoint"
   echo -n "fetching $endpoint..."
-  $HTTP_CMD $FETCH_OPTS "${epuri}"
+  "$HTTP_CMD" "${HTTP_OPTS[@]}" "${FETCH_OPTS[@]}" "${epuri}"
   echo done
 }
+
+
+# Add header to tell HTTP server to send gzipped content
+if [[ ! -z "$COMPRESS" ]]; then
+  FETCH_OPTS+=("--header=Accept-Encoding: gzip")
+fi
 
 
 # Prompt for openhds username
@@ -76,8 +85,8 @@ if [[ ! -z "$USER" ]]; then
   stty echo
 
   # Configure the login and fetch commands to use authentication
-  LOGIN_OPTS="$LOGIN_OPTS --post-data=j_username=$USER&j_password=$PASS"
-  FETCH_OPTS="$FETCH_OPTS --load-cookies $COOKIE_FILE"
+  LOGIN_OPTS+=("--post-data=j_username=$USER&j_password=$PASS")
+  FETCH_OPTS+=("--load-cookies='$COOKIE_FILE'")
 
   # Perform the actual authentication
   auth
@@ -91,3 +100,13 @@ do
   fetch "$REST_BASE" "$ep" || print "failed"
 done
 
+# Decompress content if the option was specified
+if [[ ! -z "$COMPRESS" ]]; then
+  content_dir="${ROOT_URI##*/}"
+  for file in $(find $content_dir -type f ! -name '*.tmp')
+  do
+    echo "decompressing $file"
+    gunzip < "$file" > "${file}.tmp" 
+    mv "${file}.tmp" "$file"
+  done
+fi
