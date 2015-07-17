@@ -96,6 +96,13 @@ if [[ ! -z "$USER" ]]; then
 fi
 
 
+# Cleanup the existing content directory before download attempt
+if [[ -d "$CONTENT_DIR" ]]; then
+  echo "removing content directory '$CONTENT_DIR'"
+  rm -rf "$CONTENT_DIR"
+fi
+
+
 # Attempt to download from all of the REST endpoints
 echo "downloading from $ROOT_URI"
 for ep in ${REST_EPS[*]}
