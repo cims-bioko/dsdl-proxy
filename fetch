@@ -97,7 +97,7 @@ fi
 echo "downloading from $ROOT_URI"
 for ep in ${REST_EPS[*]}
 do
-  fetch "$REST_BASE" "$ep" || print "failed"
+  fetch "$REST_BASE" "${ep}"
 done
 
 # Decompress content if the option was specified
