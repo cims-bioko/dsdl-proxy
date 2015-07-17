@@ -6,33 +6,88 @@
 # served locally.
 ##
 
+# Exit immediately if any command fails
 set -o errexit
 
+# OpenHDS URLs
 ROOT_URI=http://cims-bioko.org:8080/openhds
 LOGIN_URI=$ROOT_URI/loginProcess
 REST_BASE=$ROOT_URI/api/rest
 REST_EPS=(fieldworkers visits/cached individuals/cached relationships/cached \
  memberships/cached socialgroups/cached locationhierarchies locations/cached)
 
-echo -n "openhds username: "
+# Stores session cookie so form-based login persists across requests
+COOKIE_FILE=.cookies.txt
+
+# Variables to accumulate options for login/fetch commands, respectively
+HTTP_OPTS="-q"
+LOGIN_OPTS="$HTTP_OPTS -O /dev/null --save-cookies $COOKIE_FILE --keep-session-cookies"
+FETCH_OPTS="$HTTP_OPTS -x -nH"
+
+# Command to use for http operations
+HTTP_CMD=wget
+
+
+##
+# Performs HTTP authentication via form login
+# Takes no arguments and saves response cookies to the location specified by COOKIES_FILE
+##
+function auth() {
+  echo
+  echo -n "logging in as $USER..."
+  $HTTP_CMD $LOGIN_OPTS "$LOGIN_URI"
+  echo done
+}
+
+
+##
+# Performs an HTTP GET, saving the response at the path after host/port.
+# Specified as: "http://<REST base URL>" "<endpoint subpath>"
+#
+# For example:
+#
+#   fetch http://example.com:8080/a/b/c endpoint/path.ext
+#
+# Downloads the entire contents of http://example.com:8080/a/b/c/endpoint/path.ext to
+# ./a/b/c/endpoint/path.ext
+##
+function fetch() {
+  base=$1
+  endpoint=$2
+  epuri="$base/$endpoint"
+  echo -n "fetching $endpoint..."
+  $HTTP_CMD $FETCH_OPTS "${epuri}"
+  echo done
+}
+
+
+# Prompt for openhds username
+echo -n "username: "
 read USER
-echo -n "openhds password: "
-stty -echo
-read PASS
-stty echo
 
-echo
-echo -n "logging in as $USER..."
-wget -q -O /dev/null --post-data "j_username=$USER&j_password=$PASS" \
- --save-cookies .cookies.txt --keep-session-cookies "$LOGIN_URI"
-echo done
 
-echo "starting download from $ROOT_URI"
+# If username wasn't provided, assume no login required and skip password prompt and authenticating
+if [[ ! -z "$USER" ]]; then
+
+  # Prompt for the user's password
+  echo -n "password: "
+  stty -echo
+  read PASS
+  stty echo
+
+  # Configure the login and fetch commands to use authentication
+  LOGIN_OPTS="$LOGIN_OPTS --post-data=j_username=$USER&j_password=$PASS"
+  FETCH_OPTS="$FETCH_OPTS --load-cookies $COOKIE_FILE"
+
+  # Perform the actual authentication
+  auth
+fi
+
+
+# Attempt to download from all of the REST endpoints
+echo "downloading from $ROOT_URI"
 for ep in ${REST_EPS[*]}
 do
-  epuri="$REST_BASE/$ep"
-  echo -n "fetching $ep..."
-  wget -q -x -nH --load-cookies .cookies.txt "$epuri"
-  echo done
+  fetch "$REST_BASE" "$ep" || print "failed"
 done
 
