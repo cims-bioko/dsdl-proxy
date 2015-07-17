@@ -41,10 +41,10 @@ console, by default 8082. To configure the tablet do the following, in the
 
   * Start the openhds-tablet application (optional if you're already running it)
   * Login as a supervisor (with the remote server configured)
-  * On the sync screen, reconfigure the server to be http://<proxy>:8082/openhds
+  * On the sync screen, reconfigure the server to be http://&lt;proxy&gt;:8082/openhds
   * Hit the Sync All button
 
-Note that <proxy> should be the hostname or IP address of the computer running
+Note that &lt;proxy&gt; should be the hostname or IP address of the computer running
 the proxy.
 
 # Potential Issues
