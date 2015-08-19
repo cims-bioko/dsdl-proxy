@@ -1,7 +1,7 @@
 # Dead Simple Download Proxy
 
 An extremely simple tool for speeding up downloads of xml content from
-openhds-server. It was developed to help the Bioko field team, with slower and
+cims-server. It was developed to help the Bioko field team, with slower and
 unreliable network connections, synchronize the rather large database content
 locally.
 
@@ -39,7 +39,7 @@ Once the proxy starts, it displays the TCP port number it listens on to the
 console, by default 8082. To configure the tablet do the following, in the
 *exact* order:
 
-  * Start the openhds-tablet application (optional if you're already running it)
+  * Start the cims-tablet application (optional if you're already running it)
   * Login as a supervisor (with the remote server configured)
   * On the sync screen, reconfigure the server to be http://&lt;proxy&gt;:8082/openhds
   * Hit the Sync All button
