@@ -21,7 +21,7 @@ COOKIE_FILE=.cookies.txt
 
 # Variables to accumulate options for login/fetch commands, respectively
 HTTP_OPTS=("-q")
-LOGIN_OPTS=("-O" "/dev/null" "--save-cookies='$COOKIE_FILE'" "--keep-session-cookies")
+LOGIN_OPTS=("-O" "/dev/null" "--save-cookies=$COOKIE_FILE" "--keep-session-cookies")
 FETCH_OPTS=("-x" "-nH")
 
 # Toggles whether to ask for gzip compressed content (set to any value to enable)
@@ -89,7 +89,7 @@ if [[ ! -z "$USER" ]]; then
 
   # Configure the login and fetch commands to use authentication
   LOGIN_OPTS+=("--post-data=j_username=$USER&j_password=$PASS")
-  FETCH_OPTS+=("--load-cookies='$COOKIE_FILE'")
+  FETCH_OPTS+=("--load-cookies=$COOKIE_FILE")
 
   # Perform the actual authentication
   auth
