@@ -69,7 +69,7 @@ function fetch() {
 
 # Add header to tell HTTP server to send gzipped content
 if [[ ! -z "$COMPRESS" ]]; then
-  FETCH_OPTS+=("--header=Accept-Encoding: gzip")
+  FETCH_OPTS+=("--header=Accept-Encoding: gzip" "--header=Accept: application/xml")
 fi
 
 
