@@ -10,11 +10,10 @@
 set -o errexit
 
 # OpenHDS URLs
-ROOT_URI=http://cims-bioko.org:8080/openhds
+ROOT_URI=https://cims-bioko.org/openhds
 LOGIN_URI=$ROOT_URI/loginProcess
 REST_BASE=$ROOT_URI/api/rest
-REST_EPS=(fieldworkers visits/cached individuals/cached relationships/cached \
- memberships/cached socialgroups/cached locationhierarchies locations/cached)
+REST_EPS=(mobiledb/cached)
 
 # Stores session cookie so form-based login persists across requests
 COOKIE_FILE=.cookies.txt
@@ -69,7 +68,7 @@ function fetch() {
 
 # Add header to tell HTTP server to send gzipped content
 if [[ ! -z "$COMPRESS" ]]; then
-  FETCH_OPTS+=("--header=Accept-Encoding: gzip" "--header=Accept: application/xml")
+  FETCH_OPTS+=("--header=Accept-Encoding: gzip" "--header=Accept: application/x-sqlite3")
 fi
 
 
