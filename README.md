@@ -1,5 +1,7 @@
 # Dead Simple Download Proxy
 
+*This project is no longer active as it has been superceded by cims-sidecar.*
+
 An extremely simple tool for speeding up downloads of xml content from
 cims-server. It was developed to help the Bioko field team, with slower and
 unreliable network connections, synchronize the rather large database content
